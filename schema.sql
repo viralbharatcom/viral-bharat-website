@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS sessions (
+  token_hash TEXT PRIMARY KEY,
+  role TEXT NOT NULL CHECK(role IN ('viewer','admin')),
+  expires_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS pages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL DEFAULT (unixepoch())
+);
+CREATE TABLE IF NOT EXISTS videos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  page_id INTEGER NOT NULL REFERENCES pages(id) ON DELETE CASCADE,
+  title TEXT NOT NULL DEFAULT '',
+  photo_url TEXT NOT NULL DEFAULT '',
+  watch_url TEXT NOT NULL,
+  rating TEXT NOT NULL DEFAULT '',
+  badge TEXT NOT NULL DEFAULT '',
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at INTEGER NOT NULL DEFAULT (unixepoch())
+);
+INSERT INTO pages (title, sort_order) SELECT 'Latest Videos', 1 WHERE NOT EXISTS (SELECT 1 FROM pages);
